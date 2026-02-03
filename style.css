@@ -1,0 +1,711 @@
+/* 
+ * Dr. Organic Men - Press Center
+ * Theme: Dark Clinical Luxury & Nature's Science
+ */
+
+:root {
+    --bg-dark: #0f172a;
+    --neon-green: #39FF14;
+    --text-white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --font-heading: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-body: 'Roboto', 'Segoe UI', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    cursor: none;
+    /* Hide default cursor */
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    height: 100vh;
+    display: flex;
+}
+
+/* Custom Cursor */
+.custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--neon-green);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s, background-color 0.3s;
+    mix-blend-mode: difference;
+    margin-top: -20px;
+    /* Offset to center */
+    margin-left: -20px;
+}
+
+.cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 4px;
+    background-color: var(--neon-green);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    margin-top: -2px;
+    margin-left: -2px;
+}
+
+.cursor-hover {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(57, 255, 20, 0.1);
+    border-color: transparent;
+}
+
+/* Background Texture */
+.bg-texture {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('assets/nature_elements.png');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.25;
+    z-index: -1;
+    filter: blur(2px) saturate(0%);
+    /* Animation handled by JS Parallax now */
+    transition: transform 0.1s ease-out;
+}
+
+/* Layout */
+.container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Left: Product Hero (70%) */
+.hero-section {
+    flex: 0 0 70%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    perspective: 1000px;
+}
+
+/* Bottle Container - Occupies TOP 55% of screen strictly */
+.bottle-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 55%;
+    /* Hard limit to top section */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Center bottle within this top section */
+    z-index: 2;
+    animation: float 6s ease-in-out infinite;
+    /* Removed transform: translate which was causing the offset overlap */
+}
+
+/* New wrapper to handle the entry animation */
+.bottle-floater {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    animation: slideInUp 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.bottle-img {
+    height: 50vh;
+    /* Relative to viewport, but limited by container display */
+    max-height: 400px;
+    /* Stricter max-height to ensure it fits in 55% */
+    filter: drop-shadow(0px 20px 50px rgba(0, 0, 0, 0.8));
+    transform: rotate(-5deg);
+    transition: transform 0.5s ease-out;
+}
+
+/* ... existing code ... */
+
+/* Hero Footer News - Occupies BOTTOM 28% strictly */
+.hero-footer {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    height: 28%;
+    /* Further reduced to lower the section more */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    /* Start from top of this section */
+    z-index: 100;
+    padding-top: 3rem;
+    /* Increased padding for more separation */
+}
+
+.hero-text {
+    position: absolute;
+    top: 28%;
+    /* Centered within the top 55% section */
+    left: 10%;
+    transform: translateY(-50%);
+    z-index: 1;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    opacity: 0;
+    animation: fadeInReveal 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) 0.5s forwards;
+}
+
+.headline {
+    font-family: var(--font-heading);
+    font-size: 8rem;
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -4px;
+    color: rgba(255, 255, 255, 0.1);
+    white-space: nowrap;
+}
+
+.sub-headline {
+    position: absolute;
+    bottom: 10%;
+    left: 10%;
+    color: var(--neon-green);
+    font-family: monospace;
+    font-size: 1.2rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 10;
+    opacity: 0;
+    animation: slideInRight 1s ease 1.2s forwards;
+}
+
+.sub-headline::before {
+    content: '';
+    display: block;
+    width: 0px;
+    height: 1px;
+    background: var(--neon-green);
+    animation: growLine 1s ease 1.5s forwards;
+}
+
+/* Right: Sidebar (30%) */
+.sidebar {
+    flex: 0 0 30%;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-left: 1px solid var(--glass-border);
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transform: translateX(100%);
+    animation: slidePanelIn 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards;
+}
+
+.sidebar-header {
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+}
+
+.brand-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+}
+
+.brand-tag {
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: var(--neon-green);
+    opacity: 0.8;
+}
+
+.log-title {
+    margin-top: 3rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.5;
+    margin-bottom: 1.5rem;
+}
+
+.log-list {
+    list-style: none;
+}
+
+.log-item {
+    display: flex;
+    flex-direction: column;
+    /* Changed to column for dropdown */
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-family: monospace;
+    font-size: 0.9rem;
+    transition: background 0.3s;
+    cursor: pointer;
+}
+
+.log-item:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.log-detail {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s ease-out;
+    opacity: 0.7;
+    font-size: 0.8rem;
+    padding-left: 0.5rem;
+    border-left: 1px solid var(--neon-green);
+    margin-left: 0.5rem;
+}
+
+.log-item:hover .log-detail {
+    height: 50px;
+    /* Expand on hover */
+    margin-top: 0.5rem;
+}
+
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.2rem;
+}
+
+.neon-text {
+    color: var(--neon-green);
+}
+
+/* Press Releases */
+.press-releases {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.press-list {
+    list-style: none;
+}
+
+.press-item {
+    margin-bottom: 1.2rem;
+}
+
+.press-item a {
+    display: flex;
+    align-items: flex-start;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-family: monospace;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.press-item a:hover {
+    color: var(--text-white);
+    background: rgba(255, 255, 255, 0.03);
+    transform: translateX(5px);
+}
+
+.press-icon {
+    margin-right: 0.8rem;
+    font-size: 1rem;
+    filter: grayscale(1);
+    transition: filter 0.3s;
+}
+
+.press-item a:hover .press-icon {
+    filter: grayscale(0) drop-shadow(0 0 5px var(--neon-green));
+}
+
+
+.status-dot.warning {
+    background-color: #ffd700;
+    box-shadow: 0 0 10px #ffd700;
+}
+
+.status-text {
+    color: grey;
+    font-size: 0.8em;
+}
+
+.btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.download-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-white);
+    padding: 1.2rem;
+    text-decoration: none;
+    font-family: monospace;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    cursor: none;
+    /* Custom cursor */
+    position: relative;
+    overflow: hidden;
+}
+
+.download-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(57, 255, 20, 0.2), transparent);
+    transition: 0.5s;
+}
+
+.download-btn:hover::after {
+    left: 100%;
+}
+
+.download-btn:hover {
+    background: rgba(57, 255, 20, 0.05);
+    border-color: var(--neon-green);
+    transform: translateX(-5px);
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.1);
+}
+
+.file-icon {
+    opacity: 0.5;
+}
+
+/* Keyframes */
+@keyframes float {
+    0% {
+        transform: translateY(0px) rotate(-5deg);
+    }
+
+    50% {
+        transform: translateY(-25px) rotate(-3deg);
+    }
+
+    100% {
+        transform: translateY(0px) rotate(-5deg);
+    }
+}
+
+/* Ensure animation is running */
+.bottle-container {
+    animation: slideInUp 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.bottle-floater {
+    /* Separate breathing animation wrapper */
+    animation: float 8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInReveal {
+    from {
+        opacity: 0;
+        transform: translateY(-40%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(-50%);
+    }
+}
+
+@keyframes slidePanelIn {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes growLine {
+    to {
+        width: 40px;
+    }
+}
+
+/* Responsiveness */
+@media (max-width: 1024px) {
+    .container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .hero-section {
+        height: 60vh;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .bottle-img {
+        height: 50vh;
+    }
+
+    .headline {
+        font-size: 4rem;
+        white-space: normal;
+        text-align: center;
+        width: 100%;
+        left: 0;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        padding: 2rem;
+        transform: translateX(0);
+        animation: slideInUp 1s ease forwards;
+    }
+
+    .custom-cursor,
+    .cursor-dot {
+        display: none;
+        /* Hide custom cursor on touch devices */
+    }
+
+    * {
+        cursor: auto;
+    }
+}
+
+/* Certification Badge Link */
+.cert-link {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.cert-link:hover {
+    background: rgba(57, 255, 20, 0.05);
+    border-color: var(--neon-green);
+    transform: translateX(5px);
+}
+
+.cert-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.cert-title {
+    color: var(--text-white);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.cert-action {
+    color: var(--neon-green);
+    font-family: monospace;
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.cert-link:hover .cert-action {
+    opacity: 1;
+    text-shadow: 0 0 5px var(--neon-green);
+}
+
+/* Media Resources Section */
+.media-resources {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.contact-info {
+    margin-bottom: 2rem;
+}
+
+.contact-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: monospace;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+
+.contact-label {
+    opacity: 0.6;
+}
+
+.contact-link {
+    color: var(--neon-green);
+    text-decoration: none;
+    transition: opacity 0.3s;
+}
+
+.contact-link:hover {
+    opacity: 0.8;
+}
+
+.contact-value {
+    color: var(--text-white);
+}
+
+/* Update sidebar layout to handle new content */
+/* Old Hero Footer definition removed - see top of file for new layout */
+
+.footer-title {
+    font-family: monospace;
+    font-size: 1.5rem;
+    /* Increased from 0.9rem */
+    color: var(--text-white);
+    /* Brighter */
+    opacity: 0.9;
+    margin-bottom: 1.5rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 1rem;
+    width: 100%;
+    /* Ensure it spans the container */
+    text-align: left;
+}
+
+.news-ticker {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.news-item {
+    display: flex;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.news-item:hover {
+    background: rgba(57, 255, 20, 0.05);
+    border-color: var(--neon-green);
+    transform: translateX(10px);
+    opacity: 1;
+}
+
+.news-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    margin-right: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.news-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.news-tag {
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: var(--neon-green);
+    margin-bottom: 2px;
+}
+
+.news-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-white);
+    letter-spacing: 0.5px;
+}
+
+/* Hide news items beyond the first 3 */
+.news-item:nth-child(n+4) {
+    display: none;
+}
